@@ -85,6 +85,18 @@
             --white: #ffffff;
         }
 
+        /* ─── SCROLL PROGRESS ─── */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue), #4d94ff);
+            z-index: 1001;
+            width: 0%;
+            transition: none;
+        }
+
         html { scroll-behavior: smooth; }
 
         body {
@@ -262,10 +274,16 @@
             animation: fadeUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .hero h1 .highlight {
-            background: linear-gradient(135deg, var(--blue), #4d94ff);
+            background: linear-gradient(135deg, var(--blue), #4d94ff, #7ab8ff, var(--blue));
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientShift 4s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         .hero p {
             font-size: 1.2rem;
@@ -386,8 +404,9 @@
 
         /* ─── TRUSTED BY ─── */
         .trusted {
-            padding: 80px 48px;
+            padding: 80px 0;
             text-align: center;
+            overflow: hidden;
         }
         .trusted p {
             font-size: 0.85rem;
@@ -399,13 +418,19 @@
         }
         .trusted-logos {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            width: max-content;
+            animation: marquee 25s linear infinite;
             gap: 60px;
-            flex-wrap: wrap;
-            opacity: 0.4;
+            opacity: 0.5;
         }
-        .trusted-logos svg { height: 28px; width: auto; }
+        .trusted-logos svg { height: 28px; width: auto; flex-shrink: 0; }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .trusted:hover .trusted-logos {
+            animation-play-state: paused;
+        }
 
         /* ─── SECTIONS ─── */
         section { padding: 120px 48px; }
@@ -598,7 +623,7 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, var(--blue), var(--blue-light));
+            background: var(--gray-300);
         }
         .process-step {
             display: flex;
@@ -606,6 +631,13 @@
             align-items: flex-start;
             margin-bottom: 48px;
             position: relative;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .process-step.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
         .step-marker {
             width: 58px;
@@ -623,6 +655,12 @@
             position: relative;
             z-index: 1;
             box-shadow: 0 0 0 6px var(--white);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .process-step.visible .step-marker {
+            background: var(--blue);
+            color: var(--white);
+            box-shadow: 0 0 0 6px var(--white), 0 0 24px rgba(26,107,255,0.3);
         }
         .step-content h3 {
             font-size: 1.2rem;
@@ -844,6 +882,24 @@
             transform: translateY(0);
         }
 
+        /* ─── 3D TILT ─── */
+        .tilt-card {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        .tilt-card .tilt-shine {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(26,107,255,0.08) 0%, transparent 60%);
+        }
+        .tilt-card:hover .tilt-shine {
+            opacity: 1;
+        }
+
         /* ─── MOBILE NAV ─── */
         .hamburger {
             display: none;
@@ -1010,6 +1066,9 @@
 </head>
 <body>
 
+    <!-- Scroll Progress -->
+    <div class="progress-bar" id="progressBar"></div>
+
     <!-- Cursor Glow -->
     <div class="cursor-glow" id="cursorGlow"></div>
 
@@ -1089,6 +1148,11 @@
     <div class="trusted reveal">
         <p>Trusted by forward-thinking companies</p>
         <div class="trusted-logos">
+            <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">Acme</text></svg>
+            <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">TechFlow</text></svg>
+            <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">NovaLab</text></svg>
+            <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">CloudBase</text></svg>
+            <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">Innovate</text></svg>
             <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">Acme</text></svg>
             <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">TechFlow</text></svg>
             <svg viewBox="0 0 120 28" fill="currentColor"><text x="0" y="20" font-family="Inter" font-size="18" font-weight="700">NovaLab</text></svg>
@@ -1272,11 +1336,11 @@
                 </p>
                 <p class="founder-bio">Driving NasFon's vision and strategy. Nasir leads the company's mission to build software people trust while forging long-term partnerships with clients across industries.</p>
                 <div class="founder-socials">
-                    <a href="" aria-label="LinkedIn">
+                    <a href="https://www.linkedin.com/company/nasfoncampany" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                     </a>
-                    <a href="#" aria-label="Twitter">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <a href="https://www.instagram.com/nasfoncampany" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                     </a>
                 </div>
             </div>
@@ -1320,35 +1384,35 @@
         </div>
 
         <div class="process-steps">
-            <div class="process-step reveal">
+            <div class="process-step">
                 <div class="step-marker">1</div>
                 <div class="step-content">
                     <h3>Discovery & Strategy</h3>
                     <p>We start by understanding your business goals, users, and market to define the right product strategy.</p>
                 </div>
             </div>
-            <div class="process-step reveal">
+            <div class="process-step">
                 <div class="step-marker">2</div>
                 <div class="step-content">
                     <h3>Design & Prototype</h3>
                     <p>Intuitive UI/UX design with interactive prototypes that bring your product vision to life before code.</p>
                 </div>
             </div>
-            <div class="process-step reveal">
+            <div class="process-step">
                 <div class="step-marker">3</div>
                 <div class="step-content">
                     <h3>Build & Test</h3>
                     <p>Agile development with continuous testing, code reviews, and transparent progress updates.</p>
                 </div>
             </div>
-            <div class="process-step reveal">
+            <div class="process-step">
                 <div class="step-marker">4</div>
                 <div class="step-content">
                     <h3>Deploy & Scale</h3>
                     <p>Production-ready deployment with infrastructure optimization and ongoing performance monitoring.</p>
                 </div>
             </div>
-            <div class="process-step reveal">
+            <div class="process-step">
                 <div class="step-marker">5</div>
                 <div class="step-content">
                     <h3>Support & Evolve</h3>
@@ -1414,22 +1478,26 @@
             <div class="footer-col">
                 <h4>Connect</h4>
                 <a href="mailto:hello@nasfon.com">hello@nasfon.com</a> 
-                <a href="#">Twitter / X</a>
-                <a href="#">LinkedIn</a>
-                <a href="#">GitHub</a>
+                <a href="https://www.linkedin.com/company/nasfoncampany" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://www.facebook.com/nasfoncampany" target="_blank" rel="noopener">Facebook</a>
+                <a href="https://www.instagram.com/nasfoncampany" target="_blank" rel="noopener">Instagram</a>
+                <a href="https://www.youtube.com/@nasfoncompany" target="_blank" rel="noopener">YouTube</a>
             </div>
         </div>
-        <div class="footer-bottom">
+            <div class="footer-bottom">
             <span>&copy; 2026 NasFon. All rights reserved.</span>
             <div class="footer-socials">
-                <a href="#" aria-label="Twitter">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="#" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/company/nasfoncampany" target="_blank" rel="noopener" aria-label="LinkedIn">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                 </a>
-                <a href="#" aria-label="GitHub">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <a href="https://www.facebook.com/nasfoncampany" target="_blank" rel="noopener" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/nasfoncampany" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+                <a href="https://www.youtube.com/@nasfoncompany" target="_blank" rel="noopener" aria-label="YouTube">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                 </a>
             </div>
         </div>
@@ -1524,6 +1592,85 @@
                 }
             });
         });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        });
+
+        // 3D tilt effect on cards
+        document.querySelectorAll('.service-card, .founder-card').forEach(card => {
+            card.classList.add('tilt-card');
+            const shine = document.createElement('div');
+            shine.className = 'tilt-shine';
+            card.appendChild(shine);
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -6;
+                const rotateY = ((x - centerX) / centerX) * 6;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+                card.style.setProperty('--mx', (x / rect.width * 100) + '%');
+                card.style.setProperty('--my', (y / rect.height * 100) + '%');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+                card.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            });
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'none';
+            });
+        });
+
+        // Staggered reveal for grid children
+        const gridContainers = document.querySelectorAll('.services-grid, .values-grid, .founders-grid');
+        gridContainers.forEach(grid => {
+            const children = grid.querySelectorAll('.reveal');
+            const staggerObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
+                        siblings.forEach((child, i) => {
+                            child.style.transitionDelay = (i * 100) + 'ms';
+                            child.style.transform = 'translateY(40px) scale(0.97)';
+                            setTimeout(() => {
+                                child.classList.add('visible');
+                                child.style.transform = 'translateY(0) scale(1)';
+                            }, 50);
+                        });
+                        siblings.forEach(s => staggerObserver.unobserve(s));
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+            children.forEach(el => staggerObserver.observe(el));
+        });
+
+        // Process timeline animation
+        const processSection = document.querySelector('.process-steps');
+        const processLine = document.querySelector('.process-steps::before');
+        const processSteps = document.querySelectorAll('.process-step');
+        const processObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    processSteps.forEach((step, i) => {
+                        setTimeout(() => {
+                            step.classList.add('visible');
+                            step.style.opacity = '1';
+                            step.style.transform = 'translateY(0)';
+                        }, i * 200);
+                    });
+                    processObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        if (processSection) processObserver.observe(processSection);
     </script>
 </body>
 </html>
