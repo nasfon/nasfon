@@ -1,0 +1,22 @@
+{
+  "name": "NasFon — We Build Software People Trust",
+  "short_name": "NasFon",
+  "description": "NasFon is a technology company in Nigeria building reliable web applications, mobile apps, SaaS products, APIs, and cloud solutions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1c",
+  "theme_color": "#1a6bff",
+  "icons": [
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+const pageTitle = "Software Development Services | NasFon";
+const pageDescription = "Explore NasFon's software development services — web applications, mobile apps, SaaS products, API development, cloud infrastructure, and MVP builds for businesses in Nigeria.";
+
+const servicesJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "NasFon Software Development Services",
+  "description": "End-to-end digital product development services from NasFon.",
+  "url": "https://nasfon.com/services/",
+  "numberOfItems": 6,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Web Applications",
+      "url": "https://nasfon.com/services/web-development/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Mobile Applications",
+      "url": "https://nasfon.com/services/mobile-development/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "SaaS Products",
+      "url": "https://nasfon.com/services/saas-development/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "API & Integration",
+      "url": "https://nasfon.com/services/api-development/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "name": "Cloud & DevOps",
+      "url": "https://nasfon.com/services/cloud-devops/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "name": "MVP Development",
+      "url": "https://nasfon.com/services/mvp-development/"
+    }
+  ]
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://nasfon.com/services/" }
+  ]
+};
+
+const services = [
+  { slug: 'web-development', title: 'Web Applications', desc: 'Custom-built web platforms designed for performance, scalability, and exceptional user experiences.', icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>' },
+  { slug: 'mobile-development', title: 'Mobile Applications', desc: 'Native and cross-platform mobile apps that deliver seamless experiences on every device.', icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>' },
+  { slug: 'saas-development', title: 'SaaS Products', desc: 'Complete SaaS product development from MVP to full-scale, subscription-ready platforms.', icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' },
+  { slug: 'api-development', title: 'API & Integration', desc: 'Robust API design, development, and seamless third-party system integrations.', icon: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>' },
+  { slug: 'cloud-devops', title: 'Cloud & DevOps', desc: 'Cloud infrastructure setup, deployment automation, and continuous delivery pipelines.', icon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>' },
+  { slug: 'mvp-development', title: 'MVP Development', desc: 'Rapid, focused MVP builds to validate your idea and enter the market with confidence.', icon: '<path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M12 6v6l4 2"/>' },
+];
+---
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={[servicesJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <h1>Our Services</h1>
+            <p>End-to-end digital product development — from strategy to deployment.</p>
+        </div>
+    </section>
+
+    <section class="services" style="background: var(--gray-100);">
+        <div class="services-grid">
+            {services.map(service => (
+                <a href={`/services/${service.slug}/`} class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={service.icon} />
+                    </div>
+                    <h3>{service.title}</h3>
+                    <p>{service.desc}</p>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box reveal">
+            <h2>Ready to Build Something Great?</h2>
+            <p>Let's discuss how we can help bring your vision to life.</p>
+            <div class="cta-buttons">
+                <a href="mailto:hello@nasfon.com" class="btn-white">
+                    Get in Touch
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+                <a href="/contact/" class="btn-outline-white">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>

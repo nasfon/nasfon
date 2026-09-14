@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'biztap' } },
+    { params: { slug: 'nasfon-data' } },
+    { params: { slug: 'nasfon-marketplace' } },
+  ];
+}
+
+const { slug } = Astro.params;
+
+const projectData: Record<string, { title: string; tag: string; description: string; features: string[]; metaTitle: string; metaDescription: string }> = {
+  'biztap': {
+    title: 'BizTap',
+    tag: 'SaaS Platform',
+    description: 'BizTap is a comprehensive business management platform designed to streamline operations, manage customers, and grow revenue for small and medium businesses. Built with modern technologies and a focus on user experience.',
+    features: ['Customer relationship management (CRM)', 'Invoicing & payment processing', 'Inventory management', 'Team collaboration tools', 'Real-time analytics dashboard', 'Mobile-first responsive design'],
+    metaTitle: "BizTap — Business Management Platform | NasFon Projects",
+    metaDescription: "BizTap is a SaaS business management platform by NasFon — CRM, invoicing, inventory management, analytics, and team collaboration tools.",
+  },
+  'nasfon-data': {
+    title: 'NasFon Data',
+    tag: 'Data Analytics',
+    description: 'NasFon Data is an intelligent data analytics platform that transforms raw data into actionable insights. It helps businesses make data-driven decisions faster with beautiful visualizations and powerful querying capabilities.',
+    features: ['Interactive data visualizations', 'Custom report builder', 'Real-time data streaming', 'API for data integration', 'Role-based access control', 'Export & sharing capabilities'],
+    metaTitle: "NasFon Data — Data Analytics Platform | NasFon Projects",
+    metaDescription: "NasFon Data is an intelligent data analytics platform by NasFon — interactive visualizations, custom reports, real-time streaming, and API integration.",
+  },
+  'nasfon-marketplace': {
+    title: 'NasFon Marketplace',
+    tag: 'E-Commerce',
+    description: 'A modern digital marketplace connecting buyers and sellers across Nigeria. Built with seamless payments, logistics integration, and comprehensive vendor management tools.',
+    features: ['Multi-vendor support', 'Secure payment processing', 'Logistics & delivery tracking', 'Vendor dashboard & analytics', 'Product search & discovery', 'Review & rating system'],
+    metaTitle: "NasFon Marketplace — Digital Marketplace | NasFon Projects",
+    metaDescription: "NasFon Marketplace is a digital marketplace connecting buyers and sellers across Nigeria — multi-vendor support, secure payments, and logistics integration.",
+  },
+};
+
+const current = projectData[slug!] || projectData['biztap'];
+
+const projectJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": current.title,
+  "description": current.description,
+  "url": `https://nasfon.com/projects/${slug}/`,
+  "applicationCategory": current.tag,
+  "operatingSystem": "Web",
+  "author": {
+    "@type": "Organization",
+    "name": "NasFon Nig Ltd",
+    "url": "https://nasfon.com"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://nasfon.com/projects/" },
+    { "@type": "ListItem", "position": 3, "name": current.title, "item": `https://nasfon.com/projects/${slug}/` }
+  ]
+};
+---
+<BaseLayout title={current.metaTitle} description={current.metaDescription} jsonLd={[projectJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <span class="project-tag" style="margin-bottom: 16px;">{current.tag}</span>
+            <h1>{current.title}</h1>
+            <p>{current.description.slice(0, 120)}...</p>
+        </div>
+    </section>
+
+    <section class="service-detail">
+        <div class="service-detail-grid">
+            <div class="service-detail-content reveal">
+                <h2>{current.title}</h2>
+                <p>{current.description}</p>
+                <ul class="service-detail-features">
+                    {current.features.map(feature => (
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            {feature}
+                        </li>
+                    ))}
+                </ul>
+                <div style="margin-top: 32px;">
+                    <a href="/contact/" class="btn-primary">
+                        Discuss a Similar Project
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="service-detail-sidebar reveal">
+                <h3>Other Projects</h3>
+                <ul class="related-list">
+                    {['biztap', 'nasfon-data', 'nasfon-marketplace'].filter(s => s !== slug).map(s => (
+                        <li>
+                            <a href={`/projects/${s}/`}>
+                                {projectData[s].title}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>

@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+const pageTitle = "Software Projects & Case Studies | NasFon";
+const pageDescription = "Explore software projects built by NasFon — SaaS platforms, data analytics tools, and e-commerce marketplaces serving businesses in Nigeria.";
+
+const projectsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "NasFon Software Projects",
+  "description": "Software products and platforms built by NasFon.",
+  "url": "https://nasfon.com/projects/",
+  "numberOfItems": 3,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "BizTap",
+      "url": "https://nasfon.com/projects/biztap/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "NasFon Data",
+      "url": "https://nasfon.com/projects/nasfon-data/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "NasFon Marketplace",
+      "url": "https://nasfon.com/projects/nasfon-marketplace/"
+    }
+  ]
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://nasfon.com/projects/" }
+  ]
+};
+
+const projects = [
+  { slug: 'biztap', title: 'BizTap', tag: 'SaaS Platform', desc: 'A comprehensive business management platform designed to streamline operations, manage customers, and grow revenue for small and medium businesses.' },
+  { slug: 'nasfon-data', title: 'NasFon Data', tag: 'Data Analytics', desc: 'An intelligent data analytics platform that transforms raw data into actionable insights, helping businesses make data-driven decisions faster.' },
+  { slug: 'nasfon-marketplace', title: 'NasFon Marketplace', tag: 'E-Commerce', desc: 'A modern digital marketplace connecting buyers and sellers across Nigeria, with seamless payments, logistics, and vendor management.' },
+];
+---
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={[projectsJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <h1>Our Projects</h1>
+            <p>Explore the products and platforms we've built for clients and ourselves.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="projects-grid">
+            {projects.map(project => (
+                <a href={`/projects/${project.slug}/`} class="project-card reveal">
+                    <div class="project-thumb">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-tag">{project.tag}</span>
+                        <h3>{project.title}</h3>
+                        <p>{project.desc}</p>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>

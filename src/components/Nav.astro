@@ -1,0 +1,44 @@
+---
+const pathname = Astro.url.pathname;
+
+const navItems = [
+  { label: 'Services', href: '/services/' },
+  { label: 'Projects', href: '/projects/' },
+  { label: 'Blog', href: '/blog/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Contact', href: '/contact/' },
+];
+
+function isActive(href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+<nav id="nav">
+    <a href="/" class="nav-logo">
+        <img src="/main-logo.svg" alt="NasFon" width="369" height="129" decoding="async">
+    </a>
+    <ul class="nav-links">
+        {navItems.map(item => (
+            <li>
+                <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+                    {item.label}
+                </a>
+            </li>
+        ))}
+    </ul>
+    <a href="/contact/" class="nav-cta">Start a Project</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    {navItems.map(item => (
+        <a href={item.href} onclick="closeMobile()">{item.label}</a>
+    ))}
+    <a href="/contact/" onclick="closeMobile()" class="btn-primary" style="margin-top: 16px;">Start a Project</a>
+</div>

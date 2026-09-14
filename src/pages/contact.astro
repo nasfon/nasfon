@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const pageTitle = "Contact NasFon | Start a Software Project";
+const pageDescription = "Contact NasFon in Tella, Taraba State, Nigeria. Start your software project — web apps, mobile apps, SaaS products, APIs, and cloud solutions.";
+
+const contactJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact NasFon",
+  "description": "Contact NasFon in Tella, Taraba State, Nigeria. Start your software project — web apps, mobile apps, SaaS products, APIs, and cloud solutions.",
+  "url": "https://nasfon.com/contact/",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "NasFon Nig Ltd",
+    "url": "https://nasfon.com",
+    "email": "hello@nasfon.com",
+    "telephone": "+2347069924612",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tella",
+      "addressRegion": "Taraba State",
+      "addressCountry": "NG"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    }
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Contact", "item": "https://nasfon.com/contact/" }
+  ]
+};
+---
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={[contactJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <h1>Contact NasFon</h1>
+            <p>Ready to start your project? Let's talk about how we can help.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="contact-grid">
+            <div class="contact-info reveal">
+                <h2>Let's Start a Conversation</h2>
+                <p>Whether you have a project in mind, need technical consultation, or just want to say hello — we'd love to hear from you.</p>
+                <ul class="contact-methods">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <span><a href="mailto:hello@nasfon.com">hello@nasfon.com</a></span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span>+234 706 992 4612</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>Taraba State, Nigeria</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Available Monday — Saturday, 9am — 6pm WAT</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="contact-form reveal">
+                <h3>Send Us a Message</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="john@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="Project inquiry">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell us about your project..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+                        Send Message
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>

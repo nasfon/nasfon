@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const pageTitle = "Blog | NasFon Insights";
+const pageDescription = "Insights on software development, technology, and building digital businesses from the NasFon team in Nigeria.";
+
+const blogJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "NasFon Insights",
+  "description": "Insights on software development, technology, and building digital businesses.",
+  "url": "https://nasfon.com/blog/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "NasFon Nig Ltd",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://nasfon.com/logo.png"
+    }
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://nasfon.com/blog/" }
+  ]
+};
+
+const posts = [
+  { date: 'Sep 10, 2026', title: 'Building Trust in Software: Our Approach to Quality', excerpt: 'How we ensure every product we build meets the highest standards of reliability, security, and performance.' },
+  { date: 'Sep 5, 2026', title: 'The MVP Mindset: Validating Ideas Before Building', excerpt: 'Why starting small and validating early is the smartest path to building products people actually want.' },
+  { date: 'Aug 28, 2026', title: 'Choosing the Right Tech Stack for Your SaaS', excerpt: 'A practical guide to selecting technologies that scale with your business and team.' },
+  { date: 'Aug 15, 2026', title: 'Cloud Infrastructure Best Practices for Startups', excerpt: 'How to set up reliable, cost-effective cloud infrastructure from day one.' },
+];
+---
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={[blogJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <h1>Insights & Articles</h1>
+            <p>Thoughts on building software, technology, and growing digital businesses.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="blog-grid">
+            {posts.map(post => (
+                <div class="blog-card reveal">
+                    <div class="blog-date">{post.date}</div>
+                    <h3>{post.title}</h3>
+                    <p>{post.excerpt}</p>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>
