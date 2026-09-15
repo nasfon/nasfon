@@ -10,6 +10,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/404'),
+      customPages: ['https://nasfon.com/dangote-ipo/'],
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),

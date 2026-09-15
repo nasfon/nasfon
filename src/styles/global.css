@@ -279,6 +279,141 @@ nav.scrolled {
     background: var(--blue-light);
 }
 
+/* ─── IPO HERO BANNER ─── */
+.ipo-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 780px;
+    margin: 56px auto 0;
+    padding: 22px 26px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    text-decoration: none;
+    color: var(--white);
+    background: linear-gradient(120deg, #0a0f1c 0%, #111c38 55%, #1a2a54 100%);
+    border: 1px solid rgba(245, 185, 66, 0.22);
+    box-shadow: 0 20px 50px rgba(10, 15, 28, 0.22);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.ipo-banner::before {
+    content: '';
+    position: absolute;
+    top: -70%;
+    right: -10%;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 185, 66, 0.22) 0%, transparent 68%);
+    pointer-events: none;
+}
+.ipo-banner:hover {
+    transform: translateY(-4px);
+    border-color: rgba(245, 185, 66, 0.55);
+    box-shadow: 0 28px 60px rgba(10, 15, 28, 0.32);
+}
+.ipo-banner-shine {
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+    transition: left 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ipo-banner:hover .ipo-banner-shine { left: 140%; }
+.ipo-banner-icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1204;
+    background: linear-gradient(135deg, #ffd977, #f5a623);
+    box-shadow: 0 8px 22px rgba(245, 166, 35, 0.35);
+    position: relative;
+    z-index: 1;
+}
+.ipo-banner-icon svg { width: 28px; height: 28px; }
+.ipo-banner-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+.ipo-banner-tag {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 7px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #ffd977;
+}
+.ipo-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffd977;
+    box-shadow: 0 0 0 0 rgba(255, 217, 119, 0.6);
+    animation: ipoPulse 2s infinite;
+}
+@keyframes ipoPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 217, 119, 0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(255, 217, 119, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 217, 119, 0); }
+}
+.ipo-banner-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    color: var(--white);
+}
+.ipo-gold {
+    background: linear-gradient(135deg, #ffe9a8, #f5a623);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.ipo-banner-text {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.62);
+    max-width: 440px;
+}
+.ipo-banner-cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1204;
+    background: linear-gradient(135deg, #ffd977, #f5a623);
+    box-shadow: 0 6px 18px rgba(245, 166, 35, 0.3);
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+}
+.ipo-banner-cta svg { width: 16px; height: 16px; transition: transform 0.3s; }
+.ipo-banner:hover .ipo-banner-cta svg { transform: translateX(4px); }
+
 .hero-visual {
     margin-top: 80px;
     position: relative;
@@ -1291,6 +1426,14 @@ footer {
     .page-hero { padding: 120px 24px 60px; }
     .projects-grid { grid-template-columns: 1fr; }
     .blog-grid { grid-template-columns: 1fr; }
+    .ipo-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 24px;
+        margin-top: 40px;
+    }
+    .ipo-banner-cta { width: 100%; justify-content: center; }
 }
 @media (max-width: 480px) {
     .hero h1 { font-size: 2.2rem; }
