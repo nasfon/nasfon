@@ -5,49 +5,75 @@ import Footer from '../../components/Footer.astro';
 
 export function getStaticPaths() {
   return [
-    { params: { slug: 'biztap' } },
-    { params: { slug: 'nasfon-data' } },
-    { params: { slug: 'nasfon-marketplace' } },
+    { params: { slug: 'inventory-os' } },
+    { params: { slug: 'nasfon-market' } },
   ];
 }
 
 const { slug } = Astro.params;
 
-const projectData: Record<string, { title: string; tag: string; description: string; features: string[]; metaTitle: string; metaDescription: string }> = {
-  'biztap': {
-    title: 'BizTap',
-    tag: 'SaaS Platform',
-    description: 'BizTap is a comprehensive business management platform designed to streamline operations, manage customers, and grow revenue for small and medium businesses. Built with modern technologies and a focus on user experience.',
-    features: ['Customer relationship management (CRM)', 'Invoicing & payment processing', 'Inventory management', 'Team collaboration tools', 'Real-time analytics dashboard', 'Mobile-first responsive design'],
-    metaTitle: "BizTap — Business Management Platform | NasFon Projects",
-    metaDescription: "BizTap is a SaaS business management platform by NasFon — CRM, invoicing, inventory management, analytics, and team collaboration tools.",
+const projectData: Record<string, {
+  title: string;
+  tag: string;
+  description: string;
+  features: string[];
+  screenshots: { src: string; alt: string; caption: string }[];
+  liveUrl: string;
+  metaTitle: string;
+  metaDescription: string;
+}> = {
+  'inventory-os': {
+    title: 'Inventory OS',
+    tag: 'Inventory Management',
+    description: 'Inventory OS is a complete inventory and sales management system for retail and wholesale businesses. It tracks products, customers, sales, expenses, and outstanding credit on a real-time dashboard, and generates a receipt for every sale.',
+    features: [
+      'Real-time sales, revenue, and expense dashboard',
+      'Product and stock level tracking with low-stock alerts',
+      'Customer management with outstanding credit tracking',
+      'Expense recording and profit insights',
+      'Receipt generation for every completed sale',
+      'Quick actions for new sales, products, customers, and expenses',
+    ],
+    screenshots: [
+      { src: '/projects/inventory-dashboard.png', alt: 'Inventory OS dashboard showing sales, revenue, expenses, and recent sales', caption: 'Dashboard — sales, revenue, credit, and expenses at a glance' },
+      { src: '/projects/inventory-products.png', alt: 'Inventory OS product management screen', caption: 'Product management and stock levels' },
+      { src: '/projects/inventory-history.png', alt: 'Inventory OS sales history screen', caption: 'Sales history and receipts' },
+    ],
+    liveUrl: 'https://inventory-osnasfon.vercel.app/',
+    metaTitle: 'Inventory OS — Inventory Management System | NasFon Projects',
+    metaDescription: 'Inventory OS is an inventory and sales management system by NasFon — real-time dashboard, product tracking, customer credit, expenses, and receipts.',
   },
-  'nasfon-data': {
-    title: 'NasFon Data',
-    tag: 'Data Analytics',
-    description: 'NasFon Data is an intelligent data analytics platform that transforms raw data into actionable insights. It helps businesses make data-driven decisions faster with beautiful visualizations and powerful querying capabilities.',
-    features: ['Interactive data visualizations', 'Custom report builder', 'Real-time data streaming', 'API for data integration', 'Role-based access control', 'Export & sharing capabilities'],
-    metaTitle: "NasFon Data — Data Analytics Platform | NasFon Projects",
-    metaDescription: "NasFon Data is an intelligent data analytics platform by NasFon — interactive visualizations, custom reports, real-time streaming, and API integration.",
-  },
-  'nasfon-marketplace': {
-    title: 'NasFon Marketplace',
+  'nasfon-market': {
+    title: 'NasFon Market',
     tag: 'E-Commerce',
-    description: 'A modern digital marketplace connecting buyers and sellers across Nigeria. Built with seamless payments, logistics integration, and comprehensive vendor management tools.',
-    features: ['Multi-vendor support', 'Secure payment processing', 'Logistics & delivery tracking', 'Vendor dashboard & analytics', 'Product search & discovery', 'Review & rating system'],
-    metaTitle: "NasFon Marketplace — Digital Marketplace | NasFon Projects",
-    metaDescription: "NasFon Marketplace is a digital marketplace connecting buyers and sellers across Nigeria — multi-vendor support, secure payments, and logistics integration.",
+    description: 'NasFon Market is an online marketplace for electronics and everyday products. Customers can browse and search the catalog, add items to a cart, and check out securely, while sellers manage product listings and orders.',
+    features: [
+      'Product catalog with search and categories',
+      'Shopping cart and secure checkout',
+      'Customer accounts and order history',
+      'Product listing and order management for sellers',
+      'Mobile-friendly, fast storefront',
+      'Order notifications and tracking',
+    ],
+    screenshots: [
+      { src: '/projects/market-homepage.png', alt: 'NasFon Market storefront with product grid and search', caption: 'Storefront — browse and search products' },
+      { src: '/projects/market-hero.png', alt: 'NasFon Market featured products', caption: 'Product catalog and featured items' },
+      { src: '/projects/market-product-details.png', alt: 'NasFon Market product details page', caption: 'Product details and add to cart' },
+    ],
+    liveUrl: 'https://market.nasfon.com/',
+    metaTitle: 'NasFon Market — Online Marketplace | NasFon Projects',
+    metaDescription: 'NasFon Market is an online marketplace by NasFon — product catalog, search, cart, secure checkout, customer accounts, and order management.',
   },
 };
 
-const current = projectData[slug!] || projectData['biztap'];
+const current = projectData[slug!] || projectData['inventory-os'];
 
 const projectJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": current.title,
   "description": current.description,
-  "url": `https://nasfon.com/projects/${slug}/`,
+  "url": current.liveUrl,
   "applicationCategory": current.tag,
   "operatingSystem": "Web",
   "author": {
@@ -78,13 +104,20 @@ const breadcrumbJsonLd = {
             <span class="project-tag" style="margin-bottom: 16px;">{current.tag}</span>
             <h1>{current.title}</h1>
             <p>{current.description.slice(0, 120)}...</p>
+            <div class="hero-buttons" style="margin-top: 32px;">
+                <a href={current.liveUrl} class="btn-primary" target="_blank" rel="noopener">
+                    Visit Live Site
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a href="/contact/" class="btn-secondary">Discuss a Similar Project</a>
+            </div>
         </div>
     </section>
 
     <section class="service-detail">
         <div class="service-detail-grid">
             <div class="service-detail-content reveal">
-                <h2>{current.title}</h2>
+                <h2>About {current.title}</h2>
                 <p>{current.description}</p>
                 <ul class="service-detail-features">
                     {current.features.map(feature => (
@@ -94,17 +127,11 @@ const breadcrumbJsonLd = {
                         </li>
                     ))}
                 </ul>
-                <div style="margin-top: 32px;">
-                    <a href="/contact/" class="btn-primary">
-                        Discuss a Similar Project
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                </div>
             </div>
             <div class="service-detail-sidebar reveal">
                 <h3>Other Projects</h3>
                 <ul class="related-list">
-                    {['biztap', 'nasfon-data', 'nasfon-marketplace'].filter(s => s !== slug).map(s => (
+                    {Object.keys(projectData).filter(s => s !== slug).map(s => (
                         <li>
                             <a href={`/projects/${s}/`}>
                                 {projectData[s].title}
@@ -113,7 +140,35 @@ const breadcrumbJsonLd = {
                         </li>
                     ))}
                 </ul>
+                <h3 style="margin-top: 32px;">Live Site</h3>
+                <ul class="related-list">
+                    <li>
+                        <a href={current.liveUrl} target="_blank" rel="noopener">
+                            {current.liveUrl.replace('https://', '').replace(/\/$/, '')}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </section>
+
+    <section class="project-gallery">
+        <div class="section-header reveal">
+            <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Screenshots
+            </div>
+            <h2>Inside {current.title}</h2>
+            <p>A look at the product in action.</p>
+        </div>
+        <div class="project-shots">
+            {current.screenshots.map(shot => (
+                <figure class="project-shot reveal">
+                    <img src={shot.src} alt={shot.alt} width="1349" height="610" loading="lazy" decoding="async">
+                    <figcaption>{shot.caption}</figcaption>
+                </figure>
+            ))}
         </div>
     </section>
 
