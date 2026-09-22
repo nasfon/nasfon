@@ -34,7 +34,7 @@ function getWhatsAppUrl(phone: string): string {
         <div class="admin-nav-container">
             <div class="admin-brand">
                 <a href="/" target="_blank" title="View live site">
-                    <img src="/main-logo.svg" alt="NasFon" width="140" height="49">
+                    <img src="/main-logo.svg" alt="NasFon" width="140" height="49" style="height: 38px; width: auto;">
                 </a>
                 <span class="admin-badge">Admin Portal</span>
             </div>
@@ -54,7 +54,7 @@ function getWhatsAppUrl(phone: string): string {
         <section class="admin-stats-grid">
             <div class="admin-stat-card">
                 <div class="stat-icon-wrapper blue">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                 </div>
                 <div>
                     <span class="stat-count">{applications.length}</span>
@@ -65,7 +65,7 @@ function getWhatsAppUrl(phone: string): string {
 
             <div class="admin-stat-card">
                 <div class="stat-icon-wrapper purple">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 </div>
                 <div>
                     <span class="stat-count">{contacts.length}</span>
@@ -76,7 +76,7 @@ function getWhatsAppUrl(phone: string): string {
 
             <div class="admin-stat-card">
                 <div class="stat-icon-wrapper green">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
                 <div>
                     <span class="stat-count">{applications.length + contacts.length}</span>
@@ -90,16 +90,16 @@ function getWhatsAppUrl(phone: string): string {
         <div class="admin-controls-bar">
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="applications">
-                    Project Applications (<span id="app-counter">{applications.length}</span>)
+                    Project Applications ({applications.length})
                 </button>
                 <button class="tab-btn" data-tab="contacts">
-                    Contact Messages (<span id="contact-counter">{contacts.length}</span>)
+                    Contact Messages ({contacts.length})
                 </button>
             </div>
 
             <div class="search-filter-box">
                 <div class="search-input-wrapper">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <input type="text" id="adminSearch" placeholder="Search by name, email, topic...">
                 </div>
             </div>
@@ -109,7 +109,7 @@ function getWhatsAppUrl(phone: string): string {
         <section id="applications-tab" class="tab-content active">
             {applications.length === 0 ? (
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
                     <h3>No project applications yet</h3>
                     <p>When clients submit project intake requests on <a href="/apply/" target="_blank">/apply/</a>, they will appear here in real time.</p>
                 </div>
@@ -145,7 +145,7 @@ function getWhatsAppUrl(phone: string): string {
                                         title="Delete submission"
                                         onclick={`deleteSubmission('${app.id}', 'application')`}
                                     >
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                     </button>
                                 </div>
                             </div>
@@ -157,12 +157,12 @@ function getWhatsAppUrl(phone: string): string {
                             <div class="submission-footer">
                                 <div class="contact-links">
                                     <a href={`mailto:${app.email}?subject=Regarding your project application with NasFon`} class="action-btn email">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                         {app.email}
                                     </a>
                                     {app.phone && (
                                         <a href={getWhatsAppUrl(app.phone)} target="_blank" rel="noopener" class="action-btn phone">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                                             {app.phone} (WhatsApp)
                                         </a>
                                     )}
@@ -178,7 +178,7 @@ function getWhatsAppUrl(phone: string): string {
         <section id="contacts-tab" class="tab-content">
             {contacts.length === 0 ? (
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
                     <h3>No contact messages yet</h3>
                     <p>Inquiries submitted via the <a href="/contact/" target="_blank">/contact/</a> form will show up here.</p>
                 </div>
@@ -211,7 +211,7 @@ function getWhatsAppUrl(phone: string): string {
                                         title="Delete message"
                                         onclick={`deleteSubmission('${c.id}', 'contact')`}
                                     >
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                     </button>
                                 </div>
                             </div>
@@ -223,7 +223,7 @@ function getWhatsAppUrl(phone: string): string {
                             <div class="submission-footer">
                                 <div class="contact-links">
                                     <a href={`mailto:${c.email}?subject=${encodeURIComponent('Re: ' + (c.subject || 'Your Inquiry to NasFon'))}`} class="action-btn email">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                         {c.email}
                                     </a>
                                 </div>
@@ -236,7 +236,7 @@ function getWhatsAppUrl(phone: string): string {
     </main>
 </BaseLayout>
 
-<style>
+<style is:global>
     .admin-nav {
         background: #ffffff;
         border-bottom: 1px solid var(--gray-300);
@@ -407,34 +407,41 @@ function getWhatsAppUrl(phone: string): string {
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    .search-filter-box {
+        display: flex;
+        align-items: center;
+    }
     .search-input-wrapper {
         position: relative;
         display: flex;
         align-items: center;
     }
     .search-input-wrapper svg {
-        position: absolute;
-        left: 14px;
-        width: 16px;
-        height: 16px;
-        color: var(--gray-500);
-        pointer-events: none;
+        position: absolute !important;
+        left: 14px !important;
+        width: 16px !important;
+        height: 16px !important;
+        max-width: 16px !important;
+        max-height: 16px !important;
+        color: var(--gray-500) !important;
+        pointer-events: none !important;
     }
     .search-input-wrapper input {
-        padding: 10px 16px 10px 38px;
-        border: 1.5px solid var(--gray-300);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 0.88rem;
-        color: var(--dark);
-        width: 280px;
-        outline: none;
-        transition: border-color 0.2s;
-        background: #ffffff;
+        padding: 10px 16px 10px 38px !important;
+        border: 1.5px solid var(--gray-300) !important;
+        border-radius: 10px !important;
+        font-family: inherit !important;
+        font-size: 0.88rem !important;
+        color: var(--dark) !important;
+        width: 280px !important;
+        outline: none !important;
+        transition: border-color 0.2s !important;
+        background: #ffffff !important;
+        display: block !important;
     }
     .search-input-wrapper input:focus {
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px var(--blue-glow);
+        border-color: var(--blue) !important;
+        box-shadow: 0 0 0 3px var(--blue-glow) !important;
     }
 
     /* List & Cards */
@@ -600,7 +607,7 @@ function getWhatsAppUrl(phone: string): string {
     @media (max-width: 800px) {
         .admin-stats-grid { grid-template-columns: 1fr; }
         .submission-header { flex-direction: column; }
-        .search-input-wrapper input { width: 100%; }
+        .search-input-wrapper input { width: 100% !important; }
         .admin-controls-bar { flex-direction: column; align-items: stretch; }
     }
 </style>
