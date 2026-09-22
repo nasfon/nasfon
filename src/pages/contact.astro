@@ -81,10 +81,12 @@ const breadcrumbJsonLd = {
             </div>
             <div class="contact-form reveal">
                 <h3>Send Us a Message</h3>
-                <form>
+                <div class="form-alert" id="contactAlert" role="alert"></div>
+                <form id="contactForm">
+                    <input type="text" name="_gotcha" id="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off" aria-hidden="true">
                     <div class="form-group">
                         <label for="name">Your Name</label>
-                        <input type="text" id="name" name="name" placeholder="John Doe" required>
+                        <input type="text" id="name" name="name" placeholder="John Doe" required minlength="2">
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -96,11 +98,11 @@ const breadcrumbJsonLd = {
                     </div>
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" name="message" placeholder="Tell us about your project..." required></textarea>
+                        <textarea id="message" name="message" placeholder="Tell us about your project..." required minlength="10"></textarea>
                     </div>
-                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
-                        Send Message
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%; justify-content: center;">
+                        <span id="btnText">Send Message</span>
+                        <svg id="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     </button>
                 </form>
             </div>
@@ -109,3 +111,81 @@ const breadcrumbJsonLd = {
 
     <Footer />
 </BaseLayout>
+
+<script is:inline>
+    const contactForm = document.getElementById('contactForm');
+    const contactAlert = document.getElementById('contactAlert');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Reset alert
+            contactAlert.style.display = 'none';
+            contactAlert.className = 'form-alert';
+            contactAlert.innerHTML = '';
+
+            // Disable button
+            submitBtn.disabled = true;
+            btnText.textContent = 'Sending...';
+            btnIcon.style.display = 'none';
+
+            const formData = new FormData(contactForm);
+            const payload = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                _gotcha: formData.get('_gotcha') || '',
+            };
+
+            try {
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    contactAlert.className = 'form-alert success';
+                    contactAlert.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <div><strong>Message Sent!</strong> ${result.message}</div>
+                    `;
+                    contactAlert.style.display = 'flex';
+                    contactForm.reset();
+                } else {
+                    let errMsg = result.message || 'Something went wrong. Please check your inputs.';
+                    if (result.errors) {
+                        const firstKey = Object.keys(result.errors)[0];
+                        if (firstKey && result.errors[firstKey]?.length) {
+                            errMsg = result.errors[firstKey][0];
+                        }
+                    }
+                    contactAlert.className = 'form-alert error';
+                    contactAlert.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <div><strong>Error:</strong> ${errMsg}</div>
+                    `;
+                    contactAlert.style.display = 'flex';
+                }
+            } catch (err) {
+                contactAlert.className = 'form-alert error';
+                contactAlert.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div><strong>Network Error:</strong> Failed to connect. Please email us directly at hello@nasfon.com.</div>
+                `;
+                contactAlert.style.display = 'flex';
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = 'Send Message';
+                btnIcon.style.display = '';
+            }
+        });
+    }
+</script>

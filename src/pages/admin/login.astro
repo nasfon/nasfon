@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isValidAdminSession, verifyAdminPassword, setAdminSession } from '../../lib/auth';
+
+export const prerender = false;
+
+if (isValidAdminSession(Astro.cookies)) {
+  return Astro.redirect('/admin/');
+}
+
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const password = formData.get('password')?.toString() || '';
+
+    if (verifyAdminPassword(password)) {
+      setAdminSession(Astro.cookies);
+      return Astro.redirect('/admin/');
+    } else {
+      errorMessage = 'Invalid admin password. Please try again.';
+    }
+  } catch (err) {
+    errorMessage = 'An error occurred during authentication.';
+  }
+}
+---
+<BaseLayout title="Admin Login | NasFon" noindex={true}>
+    <div class="admin-login-wrapper">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
+        <div class="admin-login-card">
+            <div class="admin-login-header">
+                <a href="/" class="nav-logo" style="justify-content: center; margin-bottom: 12px;">
+                    <img src="/main-logo.svg" alt="NasFon" width="180" height="63">
+                </a>
+                <h2>Admin Portal</h2>
+                <p>Enter your password to access submitted inquiries and project applications.</p>
+            </div>
+
+            {errorMessage && (
+                <div class="form-alert error" style="display: flex;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div>{errorMessage}</div>
+                </div>
+            )}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••••••"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+                    Log In to Dashboard
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="/" style="font-size: 0.85rem; color: var(--gray-500); text-decoration: none;">&larr; Back to NasFon Homepage</a>
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+
+<style>
+    .admin-login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 40px 24px;
+        overflow: hidden;
+    }
+    .admin-login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(26, 107, 255, 0.15);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 440px;
+        padding: 40px;
+        position: relative;
+        z-index: 10;
+    }
+    .admin-login-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+    .admin-login-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+    .admin-login-header p {
+        font-size: 0.88rem;
+        color: var(--gray-500);
+        line-height: 1.5;
+    }
+</style>

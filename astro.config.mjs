@@ -1,9 +1,11 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://nasfon.com',
   output: 'static',
+  adapter: vercel(),
   build: {
     format: 'directory'
   },
@@ -20,6 +22,9 @@ export default defineConfig({
           item.changefreq = 'weekly';
         } else if (item.url.includes('/services/') || item.url.includes('/projects/')) {
           item.priority = 0.8;
+          item.changefreq = 'monthly';
+        } else if (item.url.includes('/apply') || item.url.includes('/contact')) {
+          item.priority = 0.9;
           item.changefreq = 'monthly';
         } else if (item.url.includes('/blog')) {
           item.priority = 0.6;

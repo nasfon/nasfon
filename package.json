@@ -10,10 +10,16 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.2"
+    "@astrojs/vercel": "^11.0.11",
+    "@libsql/client": "^0.18.0",
+    "astro": "^7.3.2",
+    "drizzle-orm": "^0.45.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "dotenv": "^18.0.3",
+    "drizzle-kit": "^0.31.11",
     "typescript": "^6.0.3"
   }
 }

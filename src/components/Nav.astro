@@ -27,7 +27,7 @@ function isActive(href: string) {
             </li>
         ))}
     </ul>
-    <a href="/contact/" class="nav-cta">Start a Project</a>
+    <a href="/apply/" class="nav-cta">Start a Project</a>
     <button class="hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
     </button>
@@ -40,5 +40,5 @@ function isActive(href: string) {
     {navItems.map(item => (
         <a href={item.href} onclick="closeMobile()">{item.label}</a>
     ))}
-    <a href="/contact/" onclick="closeMobile()" class="btn-primary" style="margin-top: 16px;">Start a Project</a>
+    <a href="/apply/" onclick="closeMobile()" class="btn-primary" style="margin-top: 16px;">Start a Project</a>
 </div>

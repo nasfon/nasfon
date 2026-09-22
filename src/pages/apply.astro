@@ -1,0 +1,241 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const pageTitle = "Start a Project | Project Application — NasFon";
+const pageDescription = "Submit your project requirements to NasFon. Web apps, mobile apps, SaaS products, APIs, and cloud infrastructure engineered for quality and trust.";
+
+const applyJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Start a Project with NasFon",
+  "description": "Submit your project requirements to NasFon. Web apps, mobile apps, SaaS products, APIs, and cloud infrastructure.",
+  "url": "https://nasfon.com/apply/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "NasFon Nig Ltd",
+    "url": "https://nasfon.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://nasfon.com/logo.png"
+    }
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nasfon.com" },
+    { "@type": "ListItem", "position": 2, "name": "Start a Project", "item": "https://nasfon.com/apply/" }
+  ]
+};
+---
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={[applyJsonLd, breadcrumbJsonLd]}>
+    <Nav />
+
+    <section class="page-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div>
+            <h1>Start a Project</h1>
+            <p>Tell us about your product vision, timeline, and requirements. We'll turn your idea into reliable software.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="contact-grid">
+            <div class="contact-info reveal">
+                <h2>Let's Engineer Your Vision</h2>
+                <p>From initial discovery to deployment and scaling, our team partners with you to deliver digital products people trust.</p>
+
+                <div class="values-grid" style="grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px;">
+                    <div class="value-card" style="padding: 20px;">
+                        <div class="value-num">01</div>
+                        <h3>Fast & Focused Scoping</h3>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-top: 6px;">We review your requirements and reply with architectural clarity within 24–48 hours.</p>
+                    </div>
+                    <div class="value-card" style="padding: 20px;">
+                        <div class="value-num">02</div>
+                        <h3>Zero Cutting Corners</h3>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-top: 6px;">Clean code, automated tests, scalable cloud setups, and secure-by-default architecture.</p>
+                    </div>
+                    <div class="value-card" style="padding: 20px;">
+                        <div class="value-num">03</div>
+                        <h3>Direct Founder Collaboration</h3>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-top: 6px;">Work directly with technical leadership invested in your product's long-term success.</p>
+                    </div>
+                </div>
+
+                <ul class="contact-methods">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <span>Direct inquiries: <a href="mailto:hello@nasfon.com">hello@nasfon.com</a></span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="contact-form reveal">
+                <h3>Project Application Form</h3>
+                <div class="form-alert" id="applyAlert" role="alert"></div>
+
+                <form id="applyForm">
+                    <input type="text" name="_gotcha" id="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientName">Your Name *</label>
+                            <input type="text" id="clientName" name="clientName" placeholder="Nasir Musa" required minlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Work Email *</label>
+                            <input type="email" id="email" name="email" placeholder="nasir@company.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="companyName">Company / Organization</label>
+                            <input type="text" id="companyName" name="companyName" placeholder="Acme Inc. (Optional)">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone / WhatsApp</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+234 ... (Optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceType">Primary Service Needed *</label>
+                        <select id="serviceType" name="serviceType" required>
+                            <option value="" disabled selected>Select a service category</option>
+                            <option value="web-development">Web Application (React / Next.js / Full-Stack)</option>
+                            <option value="mobile-development">Mobile Application (iOS / Android / Flutter)</option>
+                            <option value="saas-development">SaaS Product Development</option>
+                            <option value="api-development">API & System Integration</option>
+                            <option value="cloud-devops">Cloud Infrastructure & DevOps</option>
+                            <option value="mvp-development">MVP Development / Rapid Prototype</option>
+                            <option value="other">Other / Custom Engineering</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="budgetRange">Estimated Budget</label>
+                            <select id="budgetRange" name="budgetRange">
+                                <option value="" selected>Flexible / Discuss with team</option>
+                                <option value="$1,000 - $3,000">$1,000 – $3,000</option>
+                                <option value="$3,000 - $10,000">$3,000 – $10,000</option>
+                                <option value="$10,000 - $25,000">$10,000 – $25,000</option>
+                                <option value="$25,000+">$25,000+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeline">Target Timeline</label>
+                            <select id="timeline" name="timeline">
+                                <option value="" selected>Flexible</option>
+                                <option value="Immediately (Within 2 weeks)">Immediately (Within 2 weeks)</option>
+                                <option value="1 to 2 Months">1 to 2 Months</option>
+                                <option value="3 to 6 Months">3 to 6 Months</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Project Summary & Requirements *</label>
+                        <textarea id="description" name="description" placeholder="Describe what you are looking to build, your target audience, key features, or any existing systems..." required minlength="15"></textarea>
+                    </div>
+
+                    <button type="submit" id="applySubmitBtn" class="btn-primary" style="width: 100%; justify-content: center;">
+                        <span id="applyBtnText">Submit Application</span>
+                        <svg id="applyBtnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <Footer />
+</BaseLayout>
+
+<script is:inline>
+    const applyForm = document.getElementById('applyForm');
+    const applyAlert = document.getElementById('applyAlert');
+    const applySubmitBtn = document.getElementById('applySubmitBtn');
+    const applyBtnText = document.getElementById('applyBtnText');
+    const applyBtnIcon = document.getElementById('applyBtnIcon');
+
+    if (applyForm) {
+        applyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            applyAlert.style.display = 'none';
+            applyAlert.className = 'form-alert';
+            applyAlert.innerHTML = '';
+
+            applySubmitBtn.disabled = true;
+            applyBtnText.textContent = 'Submitting Application...';
+            applyBtnIcon.style.display = 'none';
+
+            const formData = new FormData(applyForm);
+            const payload = {
+                clientName: formData.get('clientName'),
+                email: formData.get('email'),
+                companyName: formData.get('companyName') || '',
+                phone: formData.get('phone') || '',
+                serviceType: formData.get('serviceType'),
+                budgetRange: formData.get('budgetRange') || '',
+                timeline: formData.get('timeline') || '',
+                description: formData.get('description'),
+                _gotcha: formData.get('_gotcha') || '',
+            };
+
+            try {
+                const res = await fetch('/api/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    applyAlert.className = 'form-alert success';
+                    applyAlert.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <div><strong>Application Received!</strong> ${result.message}</div>
+                    `;
+                    applyAlert.style.display = 'flex';
+                    applyForm.reset();
+                    applyForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    let errMsg = result.message || 'Please check your inputs.';
+                    if (result.errors) {
+                        const firstKey = Object.keys(result.errors)[0];
+                        if (firstKey && result.errors[firstKey]?.length) {
+                            errMsg = result.errors[firstKey][0];
+                        }
+                    }
+                    applyAlert.className = 'form-alert error';
+                    applyAlert.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <div><strong>Error:</strong> ${errMsg}</div>
+                    `;
+                    applyAlert.style.display = 'flex';
+                }
+            } catch (err) {
+                applyAlert.className = 'form-alert error';
+                applyAlert.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div><strong>Network Error:</strong> Failed to submit. Please reach us at hello@nasfon.com.</div>
+                `;
+                applyAlert.style.display = 'flex';
+            } finally {
+                applySubmitBtn.disabled = false;
+                applyBtnText.textContent = 'Submit Application';
+                applyBtnIcon.style.display = '';
+            }
+        });
+    }
+</script>
