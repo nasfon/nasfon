@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
 import { db, ensureTablesCreated } from '../../db';
 import { contactSubmissions, projectApplications } from '../../db/schema';
 import { desc } from 'drizzle-orm';
@@ -19,306 +18,701 @@ await ensureTablesCreated();
 const applications = await db.select().from(projectApplications).orderBy(desc(projectApplications.createdAt));
 const contacts = await db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt));
 
-const pendingApps = applications.filter(a => a.status === 'pending').length;
-const newContacts = contacts.filter(c => c.status === 'new').length;
+const pendingApps = applications.filter((a) => a.status === 'pending').length;
+const newContacts = contacts.filter((c) => c.status === 'new').length;
 
-function getWhatsAppUrl(phone: string): string {
-  let digits = phone.replace(/[^0-9]/g, '');
-  if (digits.startsWith('0') && digits.length === 11) {
-    digits = '234' + digits.slice(1);
-  }
-  return `https://wa.me/${digits}`;
-}
+// 3. Merge into a single inbox list for the master-detail UI
+const submissions = [
+  ...applications.map((a) => ({
+    key: `application:${a.id}`,
+    type: 'application',
+    id: a.id,
+    name: a.clientName,
+    email: a.email,
+    phone: a.phone || '',
+    status: a.status,
+    createdAt: new Date(a.createdAt).getTime(),
+    companyName: a.companyName || '',
+    serviceType: a.serviceType,
+    budgetRange: a.budgetRange || '',
+    timeline: a.timeline || '',
+    body: a.description,
+    subject: '',
+  })),
+  ...contacts.map((c) => ({
+    key: `contact:${c.id}`,
+    type: 'contact',
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    phone: '',
+    status: c.status,
+    createdAt: new Date(c.createdAt).getTime(),
+    companyName: '',
+    serviceType: '',
+    budgetRange: '',
+    timeline: '',
+    body: c.message,
+    subject: c.subject || '',
+  })),
+].sort((x, y) => y.createdAt - x.createdAt);
+
+const submissionsJson = JSON.stringify(submissions);
 ---
-<BaseLayout title="Admin Dashboard | NasFon" noindex={true}>
-    <header class="admin-nav">
-        <div class="admin-nav-container">
-            <div class="admin-brand">
-                <a href="/" target="_blank" title="View live site">
-                    <img src="/main-logo.svg" alt="NasFon" width="140" height="49" style="height: 38px; width: auto;">
-                </a>
-                <span class="admin-badge">Admin Portal</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Admin Dashboard — NasFon</title>
+    <meta name="description" content="NasFon admin dashboard">
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+                <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <div class="breadcrumb">
+                <img src="/icon.svg" alt="NasFon" class="brand-logo"/>
+                <a href="/" class="site-name">nasfon.com</a>
+                <span class="sep">›</span>
+                <span class="current" id="breadcrumb-current">Applications</span>
             </div>
-            <div class="admin-nav-actions">
-                <span class="db-status-pill">
-                    <span class="pulse-dot"></span>
-                    Turso Edge DB
-                </span>
-                <a href="/" target="_blank" class="admin-link">Live Site ↗</a>
-                <a href="/api/admin/logout" class="admin-logout-btn">Log Out</a>
+        </div>
+
+        <div class="header-actions">
+            <a href="/" class="header-link" target="_blank" rel="noopener noreferrer" title="View live site">
+                <span class="header-link-text">View live site</span>
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+            <div class="admin-profile" title="Signed in as NasFon Admin">
+                <div class="admin-avatar">N</div>
+                <span class="admin-profile-name">NasFon</span>
             </div>
+            <a href="/api/admin/logout" class="header-link" id="logout-btn" title="Sign out">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </a>
         </div>
     </header>
 
-    <main class="admin-main">
-        <!-- Stats Section -->
-        <section class="admin-stats-grid">
-            <div class="admin-stat-card">
-                <div class="stat-icon-wrapper blue">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- 3-Column Workspace -->
+    <main class="app-main" id="app-main">
+
+        <!-- Column 1: Sidebar -->
+        <aside class="app-sidebar" id="app-sidebar" aria-label="Admin Navigation">
+            <div class="sidebar-top">
+                <a href="/" class="sidebar-brand" title="nasfon.com">
+                    <img src="/icon.svg" alt="NasFon" width="20" height="20" />
+                    <span>nasfon.com</span>
+                </a>
+
+                <div class="nav-group">
+                    <div class="nav-group-title">General</div>
+                    <a class="nav-item" data-view="dashboard">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            <span>Dashboard</span>
+                        </span>
+                    </a>
+                    <a class="nav-item active" aria-current="page" data-view="applications">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            <span>Applications</span>
+                        </span>
+                        <span class={`nav-count${pendingApps === 0 ? ' zero' : ''}`} id="nav-count-apps">{pendingApps}</span>
+                    </a>
+                    <a class="nav-item" data-view="contacts">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            <span>Contacts</span>
+                        </span>
+                        <span class={`nav-count${newContacts === 0 ? ' zero' : ''}`} id="nav-count-contacts">{newContacts}</span>
+                    </a>
                 </div>
-                <div>
-                    <span class="stat-count">{applications.length}</span>
-                    <span class="stat-title">Project Applications</span>
+
+                <div class="nav-group">
+                    <div class="nav-group-title">Content Editors</div>
+                    <a class="nav-item" data-view="hero-stats">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                            <span>Hero &amp; Stats</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="tech-stack">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                            <span>Tech Stack</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="about">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <span>About</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="projects">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <span>Projects</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="classes">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            <span>Classes</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="source-code">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                            <span>Source code</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="ebooks">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                            <span>E-books</span>
+                        </span>
+                    </a>
                 </div>
-                {pendingApps > 0 && <span class="stat-tag alert">{pendingApps} Pending</span>}
+
+                <div class="nav-group">
+                    <div class="nav-group-title">Business &amp; Leads</div>
+                    <a class="nav-item" data-view="contact-support">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            <span>Contact &amp; Support</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="payments">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                            <span>Payments</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="assistant">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 2a10 10 0 0 1 10 10h-10V2z"></path><path d="M12 12L2.5 7.5"></path></svg>
+                            <span>Assistant</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="team">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span>Team</span>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-group-title">Site &amp; System</div>
+                    <a class="nav-item" data-view="settings">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            <span>Site settings</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="social">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            <span>Social links</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="visibility">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            <span>Public visibility</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="audit-log">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            <span>Change log</span>
+                        </span>
+                    </a>
+                    <a class="nav-item" data-view="security">
+                        <span class="nav-label">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span>Security</span>
+                        </span>
+                    </a>
+                </div>
             </div>
 
-            <div class="admin-stat-card">
-                <div class="stat-icon-wrapper purple">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <div class="sidebar-footer">
+                <a href="/" class="nav-item" style="color: #6b7280;">
+                    <span class="nav-label">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>Back to site</span>
+                    </span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Column 2: List Pane -->
+        <section class="col-messages" id="messages-col">
+            <div class="msg-header-pane">
+                <div class="msg-header-top">
+                    <h2 class="col-heading" id="col-heading">Applications</h2>
+                    <span class="unread-counter-label">
+                        <span class="dot"></span>
+                        <span id="list-count-text">0</span>
+                    </span>
                 </div>
-                <div>
-                    <span class="stat-count">{contacts.length}</span>
-                    <span class="stat-title">Contact Inquiries</span>
+
+                <div class="search-wrapper">
+                    <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-input" id="search-input" placeholder="Search" autocomplete="off"/>
                 </div>
-                {newContacts > 0 && <span class="stat-tag alert">{newContacts} New</span>}
+
+                <div class="filter-pills">
+                    <button class="pill-btn active" data-type="all">All</button>
+                    <button class="pill-btn" data-type="application">Applications</button>
+                    <button class="pill-btn" data-type="contact">Contacts</button>
+                </div>
             </div>
 
-            <div class="admin-stat-card">
-                <div class="stat-icon-wrapper green">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                </div>
-                <div>
-                    <span class="stat-count">{applications.length + contacts.length}</span>
-                    <span class="stat-title">Total Submissions</span>
-                </div>
-                <span class="stat-tag success">Active</span>
-            </div>
+            <ul class="messages-list" id="msg-list" role="listbox"></ul>
         </section>
 
-        <!-- Controls: Tabs + Search & Filter -->
-        <div class="admin-controls-bar">
-            <div class="admin-tabs">
-                <button class="tab-btn active" data-tab="applications">
-                    Project Applications ({applications.length})
-                </button>
-                <button class="tab-btn" data-tab="contacts">
-                    Contact Messages ({contacts.length})
-                </button>
+        <!-- Column 3: Detail Pane -->
+        <section class="col-detail" id="detail-col">
+            <div class="empty-detail" id="detail-empty">
+                <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <div class="empty-title">Inbox</div>
+                <div class="empty-subtitle">Select a submission to read</div>
             </div>
 
-            <div class="search-filter-box">
-                <div class="search-input-wrapper">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="adminSearch" placeholder="Search by name, email, topic...">
+            <div class="detail-view" id="detail-active"></div>
+        </section>
+
+        <!-- Dashboard overview -->
+        <div class="generic-view" id="view-dashboard">
+            <h1 class="generic-title">Dashboard Overview</h1>
+            <p class="generic-desc">Inbound project applications and contact inquiries.</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="lbl">Project Applications</div>
+                    <div class="val blue">{applications.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">Pending Applications</div>
+                    <div class="val">{pendingApps}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">Contact Inquiries</div>
+                    <div class="val blue">{contacts.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">New Contacts</div>
+                    <div class="val">{newContacts}</div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 1: Project Applications -->
-        <section id="applications-tab" class="tab-content active">
-            {applications.length === 0 ? (
-                <div class="empty-state">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
-                    <h3>No project applications yet</h3>
-                    <p>When clients submit project intake requests on <a href="/apply/" target="_blank">/apply/</a>, they will appear here in real time.</p>
-                </div>
-            ) : (
-                <div class="items-list" id="appList">
-                    {applications.map(app => (
-                        <div class="submission-card" id={`card-application-${app.id}`} data-search={`${app.clientName} ${app.companyName || ''} ${app.email} ${app.serviceType} ${app.description}`.toLowerCase()} data-status={app.status}>
-                            <div class="submission-header">
-                                <div>
-                                    <div class="submission-meta">
-                                        <span class="client-name">{app.clientName}</span>
-                                        {app.companyName && <span class="company-badge">{app.companyName}</span>}
-                                        <span class="service-pill">{app.serviceType.replace('-', ' ')}</span>
-                                        {app.budgetRange && <span class="budget-pill">{app.budgetRange}</span>}
-                                        {app.timeline && <span class="timeline-pill">{app.timeline}</span>}
-                                    </div>
-                                    <div class="submission-subtext">
-                                        Submitted {new Date(app.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
-                                    </div>
-                                </div>
-                                <div class="status-action-box">
-                                    <select
-                                        class={`status-select ${app.status}`}
-                                        onchange={`updateStatus('${app.id}', 'application', this.value)`}
-                                    >
-                                        <option value="pending" selected={app.status === 'pending'}>Pending Review</option>
-                                        <option value="in_review" selected={app.status === 'in_review'}>In Review</option>
-                                        <option value="accepted" selected={app.status === 'accepted'}>Accepted</option>
-                                        <option value="declined" selected={app.status === 'declined'}>Declined</option>
-                                    </select>
-                                    <button
-                                        class="delete-btn"
-                                        title="Delete submission"
-                                        onclick={`deleteSubmission('${app.id}', 'application')`}
-                                    >
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="submission-body">
-                                <p class="description-text">{app.description}</p>
-                            </div>
-
-                            <div class="submission-footer">
-                                <div class="contact-links">
-                                    <a href={`mailto:${app.email}?subject=Regarding your project application with NasFon`} class="action-btn email">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                        {app.email}
-                                    </a>
-                                    {app.phone && (
-                                        <a href={getWhatsAppUrl(app.phone)} target="_blank" rel="noopener" class="action-btn phone">
-                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                                            {app.phone} (WhatsApp)
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </section>
-
-        <!-- Tab 2: Contact Messages -->
-        <section id="contacts-tab" class="tab-content">
-            {contacts.length === 0 ? (
-                <div class="empty-state">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
-                    <h3>No contact messages yet</h3>
-                    <p>Inquiries submitted via the <a href="/contact/" target="_blank">/contact/</a> form will show up here.</p>
-                </div>
-            ) : (
-                <div class="items-list" id="contactList">
-                    {contacts.map(c => (
-                        <div class="submission-card" id={`card-contact-${c.id}`} data-search={`${c.name} ${c.email} ${c.subject || ''} ${c.message}`.toLowerCase()} data-status={c.status}>
-                            <div class="submission-header">
-                                <div>
-                                    <div class="submission-meta">
-                                        <span class="client-name">{c.name}</span>
-                                        {c.subject && <span class="subject-pill">{c.subject}</span>}
-                                    </div>
-                                    <div class="submission-subtext">
-                                        Submitted {new Date(c.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
-                                    </div>
-                                </div>
-                                <div class="status-action-box">
-                                    <select
-                                        class={`status-select ${c.status}`}
-                                        onchange={`updateStatus('${c.id}', 'contact', this.value)`}
-                                    >
-                                        <option value="new" selected={c.status === 'new'}>New</option>
-                                        <option value="reviewed" selected={c.status === 'reviewed'}>Reviewed</option>
-                                        <option value="contacted" selected={c.status === 'contacted'}>Contacted</option>
-                                        <option value="archived" selected={c.status === 'archived'}>Archived</option>
-                                    </select>
-                                    <button
-                                        class="delete-btn"
-                                        title="Delete message"
-                                        onclick={`deleteSubmission('${c.id}', 'contact')`}
-                                    >
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="submission-body">
-                                <p class="description-text">{c.message}</p>
-                            </div>
-
-                            <div class="submission-footer">
-                                <div class="contact-links">
-                                    <a href={`mailto:${c.email}?subject=${encodeURIComponent('Re: ' + (c.subject || 'Your Inquiry to NasFon'))}`} class="action-btn email">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                        {c.email}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </section>
+        <!-- Empty placeholder view for other sections -->
+        <div class="generic-view" id="view-empty">
+            <h1 class="generic-title" id="empty-view-title">Section</h1>
+            <div class="section-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                <h3>Nothing here yet</h3>
+                <p>This section is not configured yet.</p>
+            </div>
+        </div>
     </main>
-</BaseLayout>
 
-<script is:inline>
-    // Tab switching
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    <div class="toast-pill" id="toast"></div>
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
+    <div id="submissions-data" data-json={submissionsJson} hidden></div>
 
-            btn.classList.add('active');
-            const targetId = btn.getAttribute('data-tab') + '-tab';
-            const targetTab = document.getElementById(targetId);
-            if (targetTab) targetTab.classList.add('active');
-        });
-    });
+    <script is:inline>
+        const ITEMS = JSON.parse(document.getElementById('submissions-data').dataset.json);
 
-    // Live search filter
-    const searchInput = document.getElementById('adminSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const activeTab = document.querySelector('.tab-content.active');
-            if (!activeTab) return;
+        const listEl = document.getElementById('msg-list');
+        const detailEmpty = document.getElementById('detail-empty');
+        const detailActive = document.getElementById('detail-active');
+        const searchInput = document.getElementById('search-input');
+        const listCountText = document.getElementById('list-count-text');
+        const colHeading = document.getElementById('col-heading');
+        const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+        const appMain = document.getElementById('app-main');
 
-            const cards = activeTab.querySelectorAll('.submission-card');
-            cards.forEach(card => {
-                const text = card.getAttribute('data-search') || '';
-                if (!query || text.includes(query)) {
-                    card.style.display = 'block';
+        let typeFilter = 'all';
+        let searchQuery = '';
+        let selectedKey = null;
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function initials(name) {
+            const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+            const chars = parts.map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+            return chars || 'N';
+        }
+
+        function fmtTime(ts) {
+            return new Date(ts).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+
+        function waUrl(phone) {
+            let digits = String(phone || '').replace(/[^0-9]/g, '');
+            if (digits.startsWith('0') && digits.length === 11) digits = '234' + digits.slice(1);
+            return digits ? `https://wa.me/${digits}` : '';
+        }
+
+        function filtered() {
+            let list = ITEMS.slice();
+            if (typeFilter !== 'all') list = list.filter((s) => s.type === typeFilter);
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                list = list.filter((s) => `${s.name} ${s.email} ${s.body} ${s.subject} ${s.serviceType} ${s.companyName}`.toLowerCase().includes(q));
+            }
+            return list;
+        }
+
+        function typeLabel(type) {
+            return type === 'application' ? 'Application' : 'Contact';
+        }
+
+        function serviceLabel(s) {
+            return s ? s.replace(/-/g, ' ') : '';
+        }
+
+        function renderList() {
+            const list = filtered();
+            listCountText.textContent = list.length;
+            listEl.innerHTML = '';
+
+            if (list.length === 0) {
+                listEl.innerHTML = `<li style="padding:24px 16px;text-align:center;color:#9ca3af;font-size:13px;">No submissions yet</li>`;
+                return;
+            }
+
+            list.forEach((item) => {
+                const row = document.createElement('li');
+                row.className = 'msg-row' + (item.key === selectedKey ? ' selected' : '');
+                row.setAttribute('role', 'option');
+                row.setAttribute('aria-selected', item.key === selectedKey ? 'true' : 'false');
+                row.innerHTML = `
+                    <div class="msg-avatar">${esc(initials(item.name))}</div>
+                    <div class="msg-info">
+                        <div class="msg-name">${esc(item.name)}</div>
+                        <div class="msg-snippet">${esc(item.body || item.subject)}</div>
+                    </div>
+                    <div class="msg-meta">
+                        <span class="msg-time">${esc(fmtTime(item.createdAt))}</span>
+                        <span class="msg-badge ${item.type}">${esc(typeLabel(item.type))}</span>
+                    </div>
+                `;
+                row.addEventListener('click', () => selectItem(item.key));
+                listEl.appendChild(row);
+            });
+        }
+
+        function statusOptions(item) {
+            const options = item.type === 'application'
+                ? [['pending', 'Pending Review'], ['in_review', 'In Review'], ['accepted', 'Accepted'], ['declined', 'Declined']]
+                : [['new', 'New'], ['reviewed', 'Reviewed'], ['contacted', 'Contacted'], ['archived', 'Archived']];
+            return options.map(([val, label]) =>
+                `<option value="${val}" ${item.status === val ? 'selected' : ''}>${label}</option>`
+            ).join('');
+        }
+
+        function metaItems(item) {
+            const items = [];
+            if (item.type === 'application') {
+                items.push(['Service Type', serviceLabel(item.serviceType)]);
+                if (item.budgetRange) items.push(['Budget', item.budgetRange]);
+                if (item.timeline) items.push(['Timeline', item.timeline]);
+                if (item.companyName) items.push(['Company', item.companyName]);
+            } else {
+                if (item.subject) items.push(['Subject', item.subject]);
+            }
+            items.push(['Received', fmtTime(item.createdAt)]);
+            return items;
+        }
+
+        function renderDetail(item) {
+            detailEmpty.style.display = 'none';
+            detailActive.classList.add('active');
+
+            const emailHref = item.type === 'application'
+                ? `mailto:${esc(item.email)}?subject=${encodeURIComponent('Regarding your project application with NasFon')}`
+                : `mailto:${esc(item.email)}?subject=${encodeURIComponent('Re: ' + (item.subject || 'Your Inquiry to NasFon'))}`;
+            const waHref = waUrl(item.phone);
+
+            const metaHtml = metaItems(item).map(([label, value]) => `
+                <div class="meta-item">
+                    <span class="meta-label">${esc(label)}</span>
+                    <span class="meta-value">${esc(value)}</span>
+                </div>
+            `).join('');
+
+            const contactsHtml = [
+                `<a href="${emailHref}">${esc(item.email)}</a>`,
+                item.phone ? `<a href="${waHref}" target="_blank" rel="noopener noreferrer">${esc(item.phone)}</a>` : '',
+            ].filter(Boolean).join('<span>•</span>');
+
+            detailActive.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-header-left">
+                        <button type="button" class="mobile-back-btn" id="btn-mobile-back" aria-label="Back to list">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                            <span>Back</span>
+                        </button>
+                        <div class="detail-sender">
+                            <div class="detail-avatar">${esc(initials(item.name))}</div>
+                            <div class="detail-title-group">
+                                <h3>${esc(item.name)}</h3>
+                                <div class="detail-contacts">${contactsHtml}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-actions">
+                        <select class="status-select ${esc(item.status)}" id="status-select">
+                            ${statusOptions(item)}
+                        </select>
+                        <button class="action-btn danger" id="btn-delete">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-card">
+                        <div class="card-meta-grid">${metaHtml}</div>
+                        <div class="message-content-title">${item.type === 'application' ? 'Project Description' : 'Message'}</div>
+                        <div class="message-text">${esc(item.body)}</div>
+                        <div class="quick-replies">
+                            ${waHref ? `<a href="${waHref}" target="_blank" rel="noopener noreferrer" class="btn-contact whatsapp-direct">
+                                <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.539 1.947.82 2.792.82 3.182 0 5.768-2.587 5.769-5.766.001-3.181-2.586-5.766-5.769-5.766zm9.969 5.766c0 5.518-4.482 10-10 10-1.748 0-3.385-.453-4.819-1.246l-5.181 1.355 1.378-5.034c-.878-1.488-1.378-3.224-1.378-5.075 0-5.518 4.482-10 10-10s10 4.482 10 10z"/></svg>
+                                <span>Chat on WhatsApp</span>
+                            </a>` : ''}
+                            <a href="${emailHref}" class="btn-contact email-direct">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                <span>Send Email</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="reply-card">
+                        <div class="message-content-title" style="margin-bottom:8px;">Quick Reply to Client</div>
+                        <textarea id="reply-text" placeholder="Type response here (e.g. Thanks for reaching out! Let's schedule a 15-minute call...)"></textarea>
+                        <div class="reply-actions">
+                            <button class="action-btn" id="btn-copy-reply">Copy reply</button>
+                            ${waHref ? `<button class="action-btn btn-primary" id="btn-send-wa">Send via WhatsApp</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('status-select').addEventListener('change', (e) => updateStatus(item, e.target.value));
+            document.getElementById('btn-delete').addEventListener('click', () => deleteSubmission(item));
+            document.getElementById('btn-mobile-back').addEventListener('click', closeMobileDetail);
+            document.getElementById('btn-copy-reply').addEventListener('click', copyReply);
+            const sendWa = document.getElementById('btn-send-wa');
+            if (sendWa) sendWa.addEventListener('click', () => sendWhatsApp(item));
+        }
+
+        function selectItem(key) {
+            selectedKey = key;
+            const item = ITEMS.find((s) => s.key === key);
+            if (!item) return;
+            renderDetail(item);
+            renderList();
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                appMain.classList.add('mobile-detail-open');
+            }
+        }
+
+        function closeMobileDetail() {
+            appMain.classList.remove('mobile-detail-open');
+        }
+
+        function copyReply() {
+            const textarea = document.getElementById('reply-text');
+            if (!textarea) return;
+            navigator.clipboard.writeText(textarea.value).then(() => showToast('Reply copied'));
+        }
+
+        function sendWhatsApp(item) {
+            const textarea = document.getElementById('reply-text');
+            const text = textarea ? textarea.value : '';
+            const base = waUrl(item.phone);
+            const url = base + (text ? `?text=${encodeURIComponent(text)}` : '');
+            window.open(url, '_blank', 'noopener');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        async function updateStatus(item, status) {
+            try {
+                const res = await fetch('/api/admin/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: item.id, type: item.type, status }),
+                });
+                if (res.ok) {
+                    window.location.reload();
                 } else {
-                    card.style.display = 'none';
+                    showToast('Failed to update status');
                 }
+            } catch (err) {
+                showToast('Network error');
+            }
+        }
+
+        async function deleteSubmission(item) {
+            if (!confirm('Are you sure you want to permanently delete this submission? This action cannot be undone.')) return;
+            try {
+                const res = await fetch('/api/admin/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: item.id, type: item.type, action: 'delete' }),
+                });
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    showToast('Failed to delete');
+                }
+            } catch (err) {
+                showToast('Network error');
+            }
+        }
+
+        const VIEW_TITLES = {
+            'hero-stats': 'Hero & Stats',
+            'tech-stack': 'Tech Stack',
+            'about': 'About',
+            'projects': 'Projects',
+            'classes': 'Classes',
+            'source-code': 'Source code',
+            'ebooks': 'E-books',
+            'contact-support': 'Contact & Support',
+            'payments': 'Payments',
+            'assistant': 'Assistant',
+            'team': 'Team',
+            'settings': 'Site settings',
+            'social': 'Social links',
+            'visibility': 'Public visibility',
+            'audit-log': 'Change log',
+            'security': 'Security'
+        };
+
+        function setView(view) {
+            document.querySelectorAll('.nav-item[data-view]').forEach((n) => {
+                n.classList.toggle('active', n.getAttribute('data-view') === view);
+            });
+
+            const dashboardView = document.getElementById('view-dashboard');
+            const emptyView = document.getElementById('view-empty');
+
+            if (view === 'dashboard') {
+                appMain.classList.add('show-dashboard');
+                dashboardView.classList.add('active');
+                emptyView.classList.remove('active');
+                breadcrumbCurrent.textContent = 'Dashboard';
+                return;
+            }
+
+            if (VIEW_TITLES[view]) {
+                appMain.classList.add('show-dashboard');
+                dashboardView.classList.remove('active');
+                emptyView.classList.add('active');
+                document.getElementById('empty-view-title').textContent = VIEW_TITLES[view];
+                breadcrumbCurrent.textContent = VIEW_TITLES[view];
+                return;
+            }
+
+            appMain.classList.remove('show-dashboard');
+            dashboardView.classList.remove('active');
+            emptyView.classList.remove('active');
+            typeFilter = view === 'contacts' ? 'contact' : view === 'applications' ? 'application' : 'all';
+            document.querySelectorAll('.pill-btn[data-type]').forEach((p) => {
+                p.classList.toggle('active', p.getAttribute('data-type') === typeFilter);
+            });
+            colHeading.textContent = view === 'contacts' ? 'Contacts' : view === 'applications' ? 'Applications' : 'Inbox';
+            breadcrumbCurrent.textContent = colHeading.textContent;
+            selectedKey = null;
+            detailActive.classList.remove('active');
+            detailEmpty.style.display = 'flex';
+            renderList();
+        }
+
+        // Sidebar navigation
+        document.querySelectorAll('.nav-item[data-view]').forEach((n) => {
+            n.addEventListener('click', () => setView(n.getAttribute('data-view')));
+        });
+
+        // Filter pills
+        document.querySelectorAll('.pill-btn[data-type]').forEach((p) => {
+            p.addEventListener('click', () => {
+                typeFilter = p.getAttribute('data-type');
+                document.querySelectorAll('.pill-btn[data-type]').forEach((x) => x.classList.toggle('active', x === p));
+                if (typeFilter === 'all') {
+                    colHeading.textContent = 'Inbox';
+                } else {
+                    colHeading.textContent = typeFilter === 'application' ? 'Applications' : 'Contacts';
+                    const navView = typeFilter === 'application' ? 'applications' : 'contacts';
+                    document.querySelectorAll('.nav-item[data-view]').forEach((n) => {
+                        n.classList.toggle('active', n.getAttribute('data-view') === navView);
+                    });
+                    appMain.classList.remove('show-dashboard');
+                }
+                breadcrumbCurrent.textContent = colHeading.textContent;
+                selectedKey = null;
+                detailActive.classList.remove('active');
+                detailEmpty.style.display = 'flex';
+                renderList();
             });
         });
-    }
 
-    // Update status
-    async function updateStatus(id, type, status) {
-        try {
-            const res = await fetch('/api/admin/status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, type, status }),
-            });
-            if (res.ok) {
-                window.location.reload();
-            } else {
-                alert('Failed to update status. Please try again.');
-            }
-        } catch (err) {
-            alert('Network error while updating status.');
+        // Search
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderList();
+        });
+
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('app-sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        function setSidebarOpen(open) {
+            sidebar.classList.toggle('open', open);
+            backdrop.classList.toggle('open', open);
+            menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
-    }
-    window.updateStatus = updateStatus;
+        menuBtn.addEventListener('click', () => setSidebarOpen(!sidebar.classList.contains('open')));
+        backdrop.addEventListener('click', () => setSidebarOpen(false));
 
-    // Delete submission
-    async function deleteSubmission(id, type) {
-        if (!confirm('Are you sure you want to permanently delete this submission? This action cannot be undone.')) {
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/admin/status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, type, action: 'delete' }),
-            });
-
-            if (res.ok) {
-                const card = document.getElementById(`card-${type}-${id}`);
-                if (card) {
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.95)';
-                    setTimeout(() => card.remove(), 250);
-                }
-            } else {
-                alert('Failed to delete submission. Please try again.');
-            }
-        } catch (err) {
-            alert('Network error while deleting submission.');
-        }
-    }
-    window.deleteSubmission = deleteSubmission;
-</script>
+        // Initial render
+        setView('applications');
+    </script>
+</body>
+</html>

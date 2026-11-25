@@ -1,6 +1,6 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
 import { isValidAdminSession, verifyAdminPassword, setAdminSession } from '../../lib/auth';
+import '../../styles/admin.css';
 
 export const prerender = false;
 
@@ -26,90 +26,75 @@ if (Astro.request.method === 'POST') {
   }
 }
 ---
-<BaseLayout title="Admin Login | NasFon" noindex={true}>
-    <div class="admin-login-wrapper">
-        <div class="hero-bg-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-
-        <div class="admin-login-card">
-            <div class="admin-login-header">
-                <a href="/" class="nav-logo" style="justify-content: center; margin-bottom: 12px;">
-                    <img src="/main-logo.svg" alt="NasFon" width="180" height="63">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Sign in — NasFon Admin</title>
+    <meta name="description" content="Sign in to the NasFon admin portal">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <a href="/" class="auth-brand" aria-label="NasFon — home">
+                    <img src="/icon.svg" alt="" width="26" height="26"/>
+                    <span>NasFon</span>
                 </a>
-                <h2>Admin Portal</h2>
-                <p>Enter your password to access submitted inquiries and project applications.</p>
-            </div>
-
-            {errorMessage && (
-                <div class="form-alert error" style="display: flex;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <div>{errorMessage}</div>
+                <h1 class="auth-title">Sign in</h1>
+                <form class="auth-form" id="signin-form" method="POST" action="/admin/login" novalidate>
+                    <div class="auth-field">
+                        <label class="sr-only" for="password">Password</label>
+                        <input
+                            type="password"
+                            class="auth-input auth-input-pwd"
+                            name="password"
+                            id="password"
+                            placeholder="Admin password"
+                            autocomplete="current-password"
+                            required
+                            autofocus
+                        />
+                        <button type="button" class="auth-eye-btn" id="toggle-pwd" aria-label="Show password" title="Show password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eye-icon"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    <button type="submit" class="auth-btn" id="signin-btn">Sign in</button>
+                    {errorMessage && (
+                        <div class="auth-feedback show" role="alert">{errorMessage}</div>
+                    )}
+                </form>
+                <div class="auth-footer">
+                    <a href="/" class="auth-back">← Back to site</a>
+                    <p class="auth-subnote">Protected admin session</p>
                 </div>
-            )}
-
-            <form method="POST">
-                <div class="form-group">
-                    <label for="password">Admin Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="••••••••••••"
-                        required
-                        autofocus
-                    >
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
-                    Log In to Dashboard
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </button>
-            </form>
-
-            <div style="text-align: center; margin-top: 24px;">
-                <a href="/" style="font-size: 0.85rem; color: var(--gray-500); text-decoration: none;">&larr; Back to NasFon Homepage</a>
             </div>
         </div>
     </div>
-</BaseLayout>
 
-<style>
-    .admin-login-wrapper {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 40px 24px;
-        overflow: hidden;
-    }
-    .admin-login-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(26, 107, 255, 0.15);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        border-radius: 24px;
-        width: 100%;
-        max-width: 440px;
-        padding: 40px;
-        position: relative;
-        z-index: 10;
-    }
-    .admin-login-header {
-        text-align: center;
-        margin-bottom: 28px;
-    }
-    .admin-login-header h2 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 8px;
-    }
-    .admin-login-header p {
-        font-size: 0.88rem;
-        color: var(--gray-500);
-        line-height: 1.5;
-    }
-</style>
+    <script is:inline>
+        const pInput = document.getElementById('password');
+        const eyeBtn = document.getElementById('toggle-pwd');
+
+        if (eyeBtn && pInput) {
+            eyeBtn.addEventListener('click', () => {
+                const isHidden = pInput.type === 'password';
+                pInput.type = isHidden ? 'text' : 'password';
+                eyeBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                eyeBtn.setAttribute('title', isHidden ? 'Hide password' : 'Show password');
+                eyeBtn.innerHTML = isHidden
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path><path d="m2 2 20 20"></path></svg>'
+                    : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+            });
+        }
+    </script>
+</body>
+</html>
